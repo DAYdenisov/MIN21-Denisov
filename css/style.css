@@ -1,0 +1,57 @@
+/*общий блок*/
+.slide_panel_wrap {
+    width: 100%;
+    height: 600px;
+    z-index: 20;
+    position: relative; /*обязательное свойство*/
+    overflow:hidden; /*обязательное свойство*/
+    }
+ 
+		/*элементы левой панели*/
+		.left_panel {
+            margin-left:-200px; /*обязательное свойство*/
+            padding:20px;
+            margin-top: 250px; 
+            width:160px;
+            z-index: 1000;
+            position: absolute; /*обязательное свойство*/
+            top:0; /*обязательное свойство*/
+            left:0; /*обязательное свойство*/
+            background:#fcfcfc;
+            }
+            .left_panel p.open {
+            width:40px;
+            height:160px;
+            position:absolute; /*обязательное свойство*/
+            top:10px; /*обязательное свойство*/
+            left:200px; /*обязательное свойство*/
+            background:url(booton.png) no-repeat;
+            cursor:pointer;
+            }	
+            
+            /*элементы правой панели*/
+            .right_panel {
+            margin-right:-200px; /*обязательное свойство*/
+            padding:20px;
+            margin-top: 250px; 
+            width:160px; 
+            z-index: 1000;
+            position:absolute; /*обязательное свойство*/
+            top:0; /*обязательное свойство*/
+            right:0; /*обязательное свойство*/
+            background:#fcfcfc;	
+            }		
+            .right_panel p.open {
+            width:40px;
+            height:160px;
+            position:absolute; /*обязательное свойство*/
+            top:10px; /*обязательное свойство*/
+            right:200px; /*обязательное свойство*/
+            background:url(booton.png) no-repeat;
+            cursor:pointer;		
+            }
+.map{
+    width: 100%; 
+    height: 100%;
+    position: relative;
+}
