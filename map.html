@@ -17,21 +17,21 @@
 </head>
 
 <body>
-   
+
    <div class="slide_panel_wrap">
-      <div id="map"  class="map"></div>
-		<div class="left_panel">
-			<p class="open"></p>
+      <div id="map" class="map"></div>
+      <div class="left_panel">
+         <p class="open"></p>
          <p>Расчитать cтатический маршрут</p>
-         <button class="calculateRoad">Расчитать маршрут</button>
+         <button class="staticRoad">Расчитать маршрут</button>
       </div>
-      	
-		<div class="right_panel">
-			<p class="open"></p>
+
+      <div class="right_panel">
+         <p class="open"></p>
          <p>Расчитать динамический маршрут</p>
-         <button class="#">Расчитать маршрут</button>
-		</div>		
-	</div>
+         <button class="dynamicRoad">Расчитать маршрут</button>
+      </div>
+   </div>
    <script>
       // Creating map options
       var mapOptions = {
@@ -40,13 +40,19 @@
       }
 
       // Icon options
-      var iconOptions = {
+      var iconDSTUoptions = {
          iconUrl: 'img/school.png',
          iconSize: [50, 50]
       };
 
+      var iconCaroptions = {
+         iconUrl: 'img/car.png',
+         iconSize: [50, 50]
+      };
+
       // Creating a custom icon
-      var customIcon = L.icon(iconOptions);
+      var customIconDSTU = L.icon(iconDSTUoptions);
+      var customIconCar = L.icon(iconCaroptions);
 
       // Creating a map object
       var map = new L.map('map', mapOptions);
@@ -57,54 +63,90 @@
       // Adding layer to the map
       map.addLayer(layer);
 
-      // Creating a marker
-      var marker = L.marker([47.237265, 39.712304]);
+      // Creating a markerDSTU
+      var markerDSTU = L.marker([47.237265, 39.712304]);
 
-      // Adding popup to the marker
-      marker.bindPopup('Это ДГТУ').openPopup();
+      // Adding popup to the markerDSTU
+      markerDSTU.bindPopup('Это ДГТУ').openPopup();
 
-      marker.setIcon(customIcon);
+      markerDSTU.setIcon(customIconDSTU);
 
-      // Adding marker to the map
-      marker.addTo(map);
+      // Adding markerDSTU to the map
+      markerDSTU.addTo(map);
 
-      let calculateRoad = document.querySelector('.calculateRoad');
-      var marker1 = L.marker();
+      let staticRoad = document.querySelector('.staticRoad');
+      let dynamicRoad = document.querySelector('.dynamicRoad');
+      var road;
+      var roadDynamic;
+      var staticMarker = L.marker();
       var popup = L.popup();
 
       function onMapClick(e) {
-         marker1.setLatLng(e.latlng);
-         marker1.bindPopup("Наше местоположение").openPopup();
-         marker1.addTo(map);
+         staticMarker.setLatLng(e.latlng);
+         staticMarker.bindPopup("Наше местоположение").openPopup();
+         staticMarker.addTo(map);
       }
       map.on('click', onMapClick);
-      var road;
 
-      calculateRoad.onclick = function () {
+      staticRoad.onclick = function () {
          if (road != null) {
             map.removeControl(road);
             road = null;
          }
          road = L.Routing.control({
             waypoints: [
-               L.latLng(marker1.getLatLng()),
+               L.latLng(staticMarker.getLatLng()),
                L.latLng(47.237265, 39.712304)
             ],
             lineOptions: { styles: [{ color: '#9932CC', opacity: 0.95, weight: 5 }] },
             routeWhileDragging: true
          });
          road.addTo(map);
-
-
-         setTimeout(function () {
-            var a = road._routes[0].coordinates;
-            console.log(a);
-            var b = a;
-         }, 3000);
-
-
       };
 
+      dynamicRoad.onclick = function () {
+         roadDynamic = L.Routing.control({
+            waypoints: [
+               L.latLng(staticMarker.getLatLng()),
+               L.latLng(47.237265, 39.712304)
+            ],
+            lineOptions: { styles: [{ color: '#9932CC', opacity: 0.95, weight: 5 }] },
+            routeWhileDragging: false
+         });
+         roadDynamic.addTo(map);
+         var roadNavigation;
+         var markerMove;
+         var polyline;
+
+         setTimeout(function () {
+            roadNavigation = roadDynamic._routes[0].coordinates;
+            markerMove = L.marker();
+            markerMove.setLatLng(roadDynamic._routes[0].coordinates[0]);
+            markerMove.bindPopup("Мы в пути").openPopup();
+            markerMove.setIcon(customIconCar);
+            markerMove.addTo(map);
+            map.removeControl(roadDynamic);
+            roadDynamic = null;
+            roadLine = L.polyline(roadNavigation, { color: 'red' }).addTo(map);
+            // zoom the map to the roadLine
+            map.fitBounds(roadLine.getBounds());
+            var roadLength = roadNavigation.length;
+            var i = 0;
+            let timer = setInterval(move, 1000);
+            function move() {
+               i++;
+               roadNavigation.splice(0, 1);
+               map.removeControl(roadLine);
+               markerMove.setLatLng(roadNavigation[0]);
+               roadLine = L.polyline(roadNavigation, { color: 'green' }).addTo(map);
+               if (i >= roadLength-1) {
+                  clearInterval(timer);
+                  alert("Мы на месте");
+               }
+               return;
+            };
+         }, 1000);
+      };
    </script>
 </body>
 
